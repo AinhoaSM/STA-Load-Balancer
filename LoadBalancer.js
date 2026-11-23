@@ -22,14 +22,19 @@ export default class LoadBalancer {
     //   payload: "08319462", // Datos que envía el cliente
     //   work: 4              // Unidades de trabajo necesarias
     // }
+
+    const server = this.servers[0];
     for (const server of this.servers) {
-      if (server.activeRequest === null) {
+      this.next = (this.next + 1) % this.servers.length;
+      if (server.power > this.next.power) {
+        return sendToServer(server.id);
+      } else if (server.power > 2) {
+        return sendToServer(server.id);
+      } else if (server.power > 1) {
+        return sendToServer(server.id);
+      } else {
         return sendToServer(server.id);
       }
     }
-   const server = this.servers[0];
-
-    // Envía la petición al servidor y devuelve su respuesta al cliente.
-    return sendToServer(server.id);
   }
 }
