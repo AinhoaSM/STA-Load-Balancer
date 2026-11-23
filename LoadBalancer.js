@@ -15,26 +15,30 @@ export default class LoadBalancer {
     this.servers = Object.freeze([...servers]);
   }
 
-  async onRequestArrival(request, sendToServer) {
     // Ejemplo de la petición que llega:
     // {
     //   id: "request-17",
     //   payload: "08319462", // Datos que envía el cliente
     //   work: 4              // Unidades de trabajo necesarias
     // }
+  async onRequestArrival(request, sendToServer) {
+    let opcion1 = this.servers[0];
+    let rendimiento = Infinity;
 
-    const server = this.servers[0];
-    for (const server of this.servers) {
-      this.next = (this.next + 1) % this.servers.length;
-      if (server.power > this.next.power) {
-        return sendToServer(server.id);
-      } else if (server.power > 2) {
-        return sendToServer(server.id);
-      } else if (server.power > 1) {
-        return sendToServer(server.id);
-      } else {
-        return sendToServer(server.id);
+    for (let i = 0; i < this.servers.length; i++) {
+      const server = this.servers[i];
+      let open = server.queuedRequests.length;
+      if (server.activeRequest) {
+        open++;
+      }
+      const score = (open + 1) / server.power;
+
+      if (score < rendimiento) {
+        opcion1 = server;
+        rendimiento = score;
       }
     }
+    return sendToServer(opcion1.id);
   }
 }
+
